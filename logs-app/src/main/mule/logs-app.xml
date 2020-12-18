@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:ftp="http://www.mulesoft.org/schema/mule/ftp"
+	xmlns:cloudhub="http://www.mulesoft.org/schema/mule/cloudhub" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/cloudhub http://www.mulesoft.org/schema/mule/cloudhub/current/mule-cloudhub.xsd
+http://www.mulesoft.org/schema/mule/ftp http://www.mulesoft.org/schema/mule/ftp/current/mule-ftp.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="393b3f2e-b460-4af1-b3fb-b8efbd5782a6" entryTtl="20" entryTtlUnit="DAYS"/>
+	<flow name="app-logs-flow" doc:id="e9881033-ad45-49b3-9328-f0cca9534290" initialState="started">
+		<http:listener doc:name="Listener" doc:id="6db33b2d-c4a2-4c2c-a192-2495c55ef0ec" config-ref="httpListenerConfig" path="/logs"/>
+		<logger level="INFO" doc:name="Entry Logger" doc:id="9c85852a-28f8-42b1-ab8e-f50269dd105e" message="----Application Logs Extraction Started"/>
+		<http:request method="POST" doc:name="Get Access Token" doc:id="4e57097a-a79f-408a-bea1-8d489b01f847" path="/accounts/login" config-ref="httpRequestConfiguration" responseTimeout="300000">
+			<reconnect-forever frequency="200000" />
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	"username" : "${anypoint.username}",
+	"password" : "${anypoint.password}"
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Access Token to JSON" doc:id="d04cf751-41ef-49c0-b04a-25a7d92274d8">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="accessToken"><![CDATA[%dw 2.0
+output application/json
+---
+payload."access_token"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<cloudhub:list-applications doc:name="List Applications" doc:id="44480502-4b9d-4d31-8d8b-e0086b799fff" config-ref="CloudHub_Config" />
+		<ee:transform doc:name="Paylod to JSON Array" doc:id="3efd0e59-5865-4d47-b1e4-c07d50a09d78" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map($.domain)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="13c8f8cd-de52-4e13-baed-6a2cc07c42a3" >
+			<flow-ref doc:name="Call App Logs Batch Flow" doc:id="c6cd2b62-2d42-48b7-a4c4-52f2a716ef59" name="app-logs-batch-flow" />
+			<logger level="INFO" doc:name="Log extraction started" doc:id="ad987c0f-1cf8-4a6f-82d1-fc21584e4938" message='#["LOG EXTRACTION STARTED"]'/>
+		</foreach>
+		<logger level="INFO" doc:name="Exit Logger" doc:id="cd9e1d41-8f5a-42be-9072-0aa61e6c13b3" message="----Application Logs Extraction Completed"/>
+		<error-handler ref="globalError_Handler" />
+		<!-- error-handler ref="globalError_Handler" /-->
+	
+</flow>
+	<flow name="app-logs-batch-flow" doc:id="6c7afc6d-202b-47fd-b313-957c6ae0905a" >
+		<set-variable value="#[payload]" doc:name="Set Variable Domain" doc:id="a2d3561f-7c57-4caa-b0d0-2b14402f07cc" variableName="domain" />
+		<http:request method="GET" doc:name="Get Instance id" doc:id="46b3c565-41f8-4e4c-aa94-9e385f701f73" config-ref="httpRequestConfiguration" path="/cloudhub/api/v2/applications/{appname}/deployments?orderByDate=DESC" responseTimeout="300000" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"X-ANYPNT-ENV-ID" : "${anypoint.envid}",
+	"Authorization" : "bearer " ++ vars.accessToken
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"appname" : vars.domain
+}]]]></http:uri-params>
+		</http:request>
+		<ee:transform doc:name="get latest instance id" doc:id="75f8dca9-8c9d-466d-903d-6d4dfe656496" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var date = max(payload.data.createTime)
+---
+//(flatten(payload.data.instances)).instanceId reduce ($)
+(((payload.data map (item, index) ->{
+    "data" : if(item.createTime == date) item else null 
+} ) filter ((item, index) -> item.data != null )).data.instances..instanceId) reduce ($)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<os:retrieve doc:name="Retrieve latest record id" doc:id="885e1d5d-5345-428e-85ef-884edc2eb403" key="#[vars.domain]" target="recordId" objectStore="Object_store">
+			<os:default-value ><![CDATA[0]]></os:default-value>
+		</os:retrieve>
+		<http:request method="POST" doc:name="Get Application Logs" doc:id="8db6b4bb-8f14-47be-8591-71e1f708477e" config-ref="httpRequestConfiguration" path="/cloudhub/api/v2/applications/{appname}/logs" responseTimeout="3000000" targetValue="#[output application/json --- payload]">
+				<reconnect-forever frequency="200000" />
+						<http:body ><![CDATA[#[output application/json
+---
+
+{ 
+"instanceId": payload, 
+"startTime": " ", 
+"endTime": " ", 
+"priority": "INFO", 
+"threadName": "", 
+"limit": 100, 
+"limitMsgLen": 200, 
+"descending": false,
+"lowerId" : vars.recordId as String
+}]]]></http:body>
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"X-ANYPNT-ENV-ID" : "${anypoint.envid}",
+	"Authorization" : "bearer " ++ vars.accessToken
+}]]]></http:headers>
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"appname" : vars.domain,
+	"instance_id" : payload
+}]]]></http:uri-params>
+		</http:request>
+		<choice doc:name="/checking if there is cloudHub logs for the app" doc:id="78155ac5-868b-4611-9f9a-42c9af63373f" >
+			<when expression="#[sizeOf(payload) != 0]">
+				<ee:transform doc:name="transforming epoch timestamp to dateTime" doc:id="8b134ba5-2684-4769-b58f-489a91dd862e">
+					<ee:message>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="appLogs" ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) -> (item - "event") ++ {"event" : (item.event - "timestamp" ++ ("timestamp" :  ( ((item.event.timestamp as Number/1000) as DateTime  + |PT5H30M|) as String {format:"yyyy-MM-dd HH:mm:ss"} ) ) ) } )]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<file:write doc:name="writing the app logs to fileBeats to be fetched by logstash" doc:id="64d38c2a-04de-4673-aea1-b2ea958aa4e9" path='#[lower(vars.domain) ++ ".log"]' mode="APPEND" config-ref="File_Config1">
+					<file:content ><![CDATA[#[vars.appLogs]]]></file:content>
+				</file:write>
+				<os:store doc:name="store the recent record id" doc:id="b5a6f4be-36d8-4e48-ae2e-7fa132a855f4" objectStore="Object_store" key="#[vars.domain]">
+					<os:value ><![CDATA[#[vars.appLogs.recordId[-1]]]]></os:value>
+				</os:store>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="no app logs" doc:id="4a274205-b362-442d-8cb8-531dbdba9d28" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"no application logs"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<error-handler ref="globalError_Handler" />
+	
+</flow>
+
+</mule>
