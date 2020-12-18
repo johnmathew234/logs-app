@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="logs-app-suite.xml" />
+	<flow name="mock-flow-ref" doc:id="8c3688e5-8b2d-4e5f-bc02-ac53a6ad8f3a" >
+		<try doc:name="Try" doc:id="75cb2d9f-d8da-4ed2-bc35-d581b9c2cd9a" >
+			<munit-tools:retrieve doc:name="Retrieve" doc:id="62a57651-c835-4d75-8d91-f21b502886ce" key="Mock Call App Logs Batch Flow"/>
+			<error-handler >
+				<on-error-continue enableNotifications="false" logException="false" doc:name="On Error Continue" doc:id="f23fa284-6bd0-4262-a1aa-708f72ea9496" type="ANY">
+					<set-payload value="#[1]" doc:name="Set Payload" doc:id="77340bee-3912-4bb4-a8dd-fe3a71adce5f" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<munit-tools:store doc:name="Store" doc:id="7e13f5ba-9d67-4be3-9dce-b8569e67af23" key="Mock Call App Logs Batch Flow">
+			<munit-tools:value ><![CDATA[#[payload + 1]]]></munit-tools:value>
+		</munit-tools:store>
+		<choice doc:name="Choice" doc:id="123bbc0f-1519-4f15-9568-fad80cc4bffc" >
+			<when expression="#[payload == 1]">
+				<munit:set-event doc:name="Set Event" doc:id="a40c22cf-18f3-4012-9a60-1f5642d83dfe" >
+					<munit:payload value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_payload1.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:attributes value="#[readUrl('classpath://applogsflowtest\mock_attributes.dwl')]" />
+					<munit:variables >
+						<munit:variable key="domain" value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_variable_1.dwl')]" encoding="UTF-8" mediaType="application/json" />
+						<munit:variable key="rootMessage" value="#[readUrl('classpath://applogsflowtest\mock_variable_2.dwl')]" />
+						<munit:variable key="recordId" value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_variable_3.dwl')]" encoding="UTF-8" mediaType="application/json" />
+						<munit:variable key="counter" value="#[readUrl('classpath://applogsflowtest\mock_variable_4.dwl')]" />
+						<munit:variable key="accessToken" value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_variable_5.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					</munit:variables>
+				</munit:set-event>
+			</when>
+			<when expression="#[payload == 2]">
+				<munit:set-event doc:name="Set Event" doc:id="10bb4fff-d065-4915-b7ce-254b97767fac" >
+					<munit:payload value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_payload2.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:attributes value="#[readUrl('classpath://applogsflowtest\mock_attributes1.dwl')]" />
+					<munit:variables >
+						<munit:variable key="domain" value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_variable_6.dwl')]" encoding="UTF-8" mediaType="application/json" />
+						<munit:variable key="rootMessage" value="#[readUrl('classpath://applogsflowtest\mock_variable_7.dwl')]" />
+						<munit:variable key="recordId" value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_variable_8.dwl')]" encoding="UTF-8" mediaType="application/json" />
+						<munit:variable key="counter" value="#[readUrl('classpath://applogsflowtest\mock_variable_9.dwl')]" />
+						<munit:variable key="accessToken" value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_variable_10.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					</munit:variables>
+				</munit:set-event>
+			</when>
+			<when expression="#[payload == 3]">
+				<munit:set-event doc:name="Set Event" doc:id="65862103-ce4b-4ab4-8211-119d1bf12cbe" >
+					<munit:payload value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_payload3.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					<munit:attributes value="#[readUrl('classpath://applogsflowtest\mock_attributes2.dwl')]" />
+					<munit:variables >
+						<munit:variable key="domain" value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_variable_11.dwl')]" encoding="UTF-8" mediaType="application/json" />
+						<munit:variable key="rootMessage" value="#[readUrl('classpath://applogsflowtest\mock_variable_12.dwl')]" />
+						<munit:variable key="recordId" value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_variable_13.dwl')]" encoding="UTF-8" mediaType="application/json" />
+						<munit:variable key="counter" value="#[readUrl('classpath://applogsflowtest\mock_variable_14.dwl')]" />
+						<munit:variable key="accessToken" value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_variable_15.dwl')]" encoding="UTF-8" mediaType="application/json" />
+					</munit:variables>
+				</munit:set-event>
+			</when>
+			<otherwise >
+				<munit-tools:fail doc:name="Fail" doc:id="1f3a7408-c1b7-405c-bd6a-98b9eac03ac3" message="There are no more events to mock"/>
+			</otherwise>
+		</choice>
+	</flow>
+	<munit:test name="app-logs-flow-test" doc:id="bc054d95-95d7-4e75-b236-fc3ae2092e62" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock List Applications" doc:id="386752d2-760c-4201-aebb-14766c18b6f2" processor="cloudhub:list-applications">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="44480502-4b9d-4d31-8d8b-e0086b799fff" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="accessToken" value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_variable_.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock Call App Logs Batch Flow" doc:id="0a71f9d4-1456-422e-ab4c-250e4dc589b8" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c6cd2b62-2d42-48b7-a4c4-52f2a716ef59" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-call flow="mock-flow-ref" />
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock Get Access Token" doc:id="20aa7687-384e-4243-a343-180c22c53e5a" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="4e57097a-a79f-408a-bea1-8d489b01f847" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_payload4.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://applogsflowtest\mock_attributes3.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="301c7b30-dd65-488b-86dd-34ba7a1cc2d2" >
+				<munit:payload value="#[readUrl('classpath://applogsflowtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://applogsflowtest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to app-logs-flow" doc:id="99e3c65f-e395-440f-bf70-5e7a99b22cc1" name="app-logs-flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="e0cac52b-cecd-48b9-98c9-2baca49ef7fa" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import applogsflowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="logs-app-suiteTest" doc:id="169dcd23-ea8f-4b3f-9a22-3343a6d82480" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set variable domain" doc:id="4dc7d20c-4a52-4625-bd8d-4ae6ec3ca69e" >
+				<munit:payload value='#["demo-elk"]' />
+			</munit:set-event>
+			<munit-tools:mock-when doc:name="Mock get instance id" doc:id="29d7eab1-2d6b-4e21-a428-60cde916eb45" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Get Instance Id" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://sample/get-instance-id.dwl')]
+" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock get app logs" doc:id="d1821d6a-2b44-4bd6-bf3a-5967ce147372" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="POST" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Get Application Logs" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#['[]']" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to app-logs-batch-flow" doc:id="4519ce10-f394-4a31-a52f-452cc6b2d667" name="app-logs-batch-flow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-equals doc:name="Assert equals final payload" doc:id="f1bbc970-2f19-47f5-ae98-21f0cc2db179" actual="#[payload]" expected='#["no application logs"]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="logs-app-suiteTest1" doc:id="97d31a88-01ff-4853-811b-b2b1065e6573" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set variable domain" doc:id="7c190287-1dd6-4d91-8131-1cfaa49c6cd2" >
+				<munit:payload value='#["demo-elk"]' />
+			</munit:set-event>
+			<munit-tools:mock-when doc:name="Mock get instance id" doc:id="e528d18c-b0bc-4507-8f28-be63231c55d8" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Get Instance Id" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://sample/get-instance-id.dwl')]
+" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock get app logs" doc:id="ad5c97f4-9dc5-4ec8-a8b7-d093715fecc7" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="POST" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Get Application Logs" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://sample/get-logs.dwl')]
+" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock file write" doc:id="115973dd-9b97-4e46-a020-fccf2f4f3d4e" processor="file:write">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="/writing the app logs to fileBeats to be fetched by logstash" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="64d38c2a-04de-4673-aea1-b2ea958aa4e9" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to app-logs-batch-flow" doc:id="5f0df49c-37eb-4f17-9201-a603829aabf8" name="app-logs-batch-flow" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="bc792074-49af-47fb-a98a-87ee4696f0b2" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="logs-app-suiteTest2" doc:id="daf5a096-0664-4dff-8a34-8b79014ef605" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock get access token" doc:id="381b5c34-49d9-495b-989f-38964ca5c23a" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="POST" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Get Access Token" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="b23e30e0-2523-4408-9113-95ef87d4d96f" >
+				<flow-ref doc:name="Flow-ref to app-logs-flow" doc:id="b1ce5f33-a0d0-4638-bee6-da3e2247453a" name="app-logs-flow" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e1e2aebc-bc60-495b-b4ac-acf059a2b502" >
+						<logger level="INFO" doc:name="Logger" doc:id="ea5c9b02-1e61-4181-a47e-16afb016b59d" message='#["forwarding the error for assertion"]'/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals the error body" doc:id="70cfa252-6cfc-426b-8902-defe4ed003f8" actual="#[payload]" expected='#[{
+  "error": "HTTP:BAD_REQUEST",
+  "description": ""
+}]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="logs-app-suiteTest3" doc:id="93ac2b03-17ce-425b-a4cc-43269dd4429c" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock list applications" doc:id="83b1cc84-2e0d-4491-a24d-6b1f39942056" processor="cloudhub:list-applications" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="List Applications" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="44480502-4b9d-4d31-8d8b-e0086b799fff" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="CLOUDHUB:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock Get Access Token" doc:id="442b7592-a64c-4103-af95-d923b0ca4d0a" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="4e57097a-a79f-408a-bea1-8d489b01f847" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://applogsflowtest\mock_payload4.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://applogsflowtest\mock_attributes3.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="10036798-6b78-4768-99d8-55faa817920b" >
+				<flow-ref doc:name="Flow-ref to app-logs-flow" doc:id="0c8e1672-7547-46c5-9306-f57628ab31f3" name="app-logs-flow" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7040c562-6b52-4d3d-abc4-7a69e1b4121e" >
+						<logger level="INFO" doc:name="Logger" doc:id="ed6db17f-578d-49e6-a5b6-dbddbc9a6e29" message='#["forwarding the error for assertion"]' />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals the error body" doc:id="1e13c965-0e6d-4904-9bbb-69f843a27118" actual="#[payload]" expected='#[{
+  "error": "CLOUDHUB:CONNECTIVITY",
+  "description": ""
+}]' />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
