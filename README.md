@@ -6,7 +6,7 @@
 
    This application fetches logs from cloudhub applciation periodically and store them in a file system. (Local File Storage in this case)
   
-**Note** : Listener is used as the evnt source for testing purposes which should actually be replaced with the scheduler having a desired polling frequency.
+**Note** : Listener is used as the event source for testing purposes which should actually be replaced with the scheduler having a desired polling frequency.
   
   
 **Listener Endpoint** : http://localhost:8081/logs
