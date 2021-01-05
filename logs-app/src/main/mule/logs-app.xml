@@ -93,7 +93,7 @@ var date = max(payload.data.createTime)
 "priority": "INFO", 
 "threadName": "", 
 "limit": 100, 
-"limitMsgLen": 200, 
+"limitMsgLen": 200000, 
 "descending": false,
 "lowerId" : vars.recordId as String
 }]]]></http:body>
